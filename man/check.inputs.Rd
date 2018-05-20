@@ -11,5 +11,5 @@ check.inputs(occ)
 \item{occ}{Run this function requires loading in the occupancy raster stack}
 }
 \description{
-This function runs a number of checks before running the power analysis simulations to make sure the raster layers have the same dimensions
+This function checks the dimensions of raster layers before running the power analysis simulations
 }

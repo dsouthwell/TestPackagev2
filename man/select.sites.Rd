@@ -9,53 +9,58 @@ select.sites(sites, n.sites, R, all.loaded.sites, load.sites,
   new.site.selection, plot.sites)
 }
 \arguments{
-\item{sites}{Contains the XY coordinates of sites to be surveyed. If sites are to be selected randomly, the function requires dummy XY coordinates to be provided. The header of the x-coordinate should be an x, the header for the y-coordinate should be a y.}
+\item{sites}{Contains the XY coordinates of sites to be surveyed. The header of the x-coordinate should be an x, the header for the y-coordinate should be a y. If sites are to be selected randomly, dummy XY coordinates must still be provided.}
 
-\item{n.sites}{The number of sites to be monitored. If the XY coordinates are to be loaded into the program, this must be equal to the number of rows in the sites matrix}
+\item{n.sites}{The number of sites to be monitored. If sites are pre-determined, this must be equal to the number of rows in the site coordinate matrix}
 
-\item{R}{The ratio of remote to non-remote sites to be monitored. Setting R=1 means all sites will be in remote areas. Setting R=0 means no sites will be in remote areas, Setting R=0.6 means that 60% of randomly selected sites will be in remote areas}
+\item{R}{The ratio of remote to non-remote sites. If R is 1, all sites will be in remote areas. If R is 0, no sites will be in remote areas, Setting R=0.6 means that 60 percent of randomly selected sites will be in remote areas}
 
-\item{all.loaded.sites}{Set to TRUE to monitor all of the XY coordinates loaded into the program, FALSE to monitor a subset of sites. If n.sites is less than the numebr of loaded sites, the subset is selected at random during each simulation. If n.sites is greater than the number of loaded sites, the remainders are positioned randomly throughout the landscape each simulation}
+\item{all.loaded.sites}{Set to TRUE to monitor all of the XY coordinates loaded into the program, FALSE to monitor more than, or a subset of sites, loaded into the program. If n.sites is less than the number of loaded sites, a subset is selected randomly during each simulation. If n.sites is greater than the number of loaded sites, the remaining sites are positioned randomly throughout the landscape at the start of each simulation}
 
-\item{load.sites}{Set to TRUE if monitoring is simulated at fixed coordinates in the landscape, FALSE if sites are to be randomly selected, randomly stratified across environmental layers, or positioned on cells with the highest expected species richness}
+\item{load.sites}{Set to TRUE only monitor at fixed coordinates in the landscape, FALSE if sites are to be randomly selected, randomly stratified across environmental layers, or positioned on cells with the highest expected species richness}
 
 \item{new.site.selection}{Set to 'random' to select sites randomly throughout the landscape, 'stratified' to randomly select equal number of sites with environmental strata, or 'maxocc' to position sites on cells with the highest relative species richness}
 
-\item{plot.sites}{Set to TRUE to plot the location of sites for the first simulation, FALSE to not plot sites.}
+\item{plot.sites}{Set to TRUE to plot the location of sites for the first simulation, FALSE to not plot the location of sites}
 }
 \description{
-This function positions sites in the landscape for monitoring. Sites can be pre-selected by loading in file of XY coordinates, randomly selected at the start of each simulation, randomly stratified across environmental layers at the start of each simulation, or positioned on cells 
-with the highest expected species richness. If sites are selected randomly, they can also be divided between remote and non-remote areas given the remote-nonremote ratio R
+This function positions sites in the landscape for monitoring. Sites can be: 1) pre-selected by loading a file of the XY coordinates; 2) randomly selected at the start of each simulation; 3) randomly stratified across environmental layers at the start of each simulation, or; 3) positioned on cells 
+with the highest expected species richness. If sites are selected randomly, they can also be divided between remote and non-remote areas given the ratio R
 }
 \examples{
+#Load in fixed site coordinates to simulate monitoring at each site
 load.sites <- TRUE
 all.loaded.sites <- TRUE
 new.site.selection <- 'random'
-R <- 0.5
+R <- 1
 n.sites <- 150
 plot.sites <- TRUE
 xy.sites <- select.sites(sites, n.sites, R, all.loaded.sites, load.sites, new.site.selection, plot.sites) 
 
+#Load in coordinates of 150 sites, but simulate monitoring at 200 sites
+#Select the remaining 50 sites randomly throughout the landscape 
 load.sites <- TRUE
 all.loaded.sites <- FALSE
 new.site.selection <- 'random'
-R <- 0.5
-n.sites <- 200
+R <- 1
+n.sites <- 100
 plot.sites <- TRUE
 xy.sites <- select.sites(sites, n.sites, R, all.loaded.sites, load.sites, new.site.selection, plot.sites)
 
-#' load.sites <- FALSE
+#Select 150 sites randomly stratified across environmental layers at the start of each simulation 
+load.sites <- FALSE
 all.loaded.sites <- FALSE
 new.site.selection <- 'stratified'
-R <- 0.5
+R <- 1
 n.sites <- 150
 plot.sites <- TRUE
 xy.sites <- select.sites(sites, n.sites, R, all.loaded.sites, load.sites, new.site.selection, plot.sites)
 
-#' #' load.sites <- FALSE
+#Position 150 sites for monitoring on cells with the highest relative species richness
+load.sites <- FALSE
 all.loaded.sites <- FALSE
 new.site.selection <- 'maxocc'
-R <- 0.5
+R <- 1
 n.sites <- 150
 plot.sites <- TRUE
 xy.sites <- select.sites(sites, n.sites, R, all.loaded.sites, load.sites, new.site.selection, plot.sites)

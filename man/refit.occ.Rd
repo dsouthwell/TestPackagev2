@@ -5,7 +5,7 @@
 \alias{refit.occ}
 \title{Refit occupancy raster layers function}
 \usage{
-refit.occ(occ.new, layers, time.fire, fire.freq, jj, veg.ID, dist.occ.time,
+refit.occ(occ.new, layers, time.fire, fire.freq, jj, dist.occ.time,
   dist.occ.freq, n.species)
 }
 \arguments{
@@ -19,8 +19,6 @@ refit.occ(occ.new, layers, time.fire, fire.freq, jj, veg.ID, dist.occ.time,
 
 \item{jj}{The year of the monitoring program}
 
-\item{veg.ID}{}
-
 \item{dist.occ.time}{An integer indentifying which layer in the covariate raster stack is the time since the last disturbance layer}
 
 \item{dist.occ.freq}{An integer indentifying which layer in the covariate raster stack is the disturbance frequency layer}
@@ -28,6 +26,6 @@ refit.occ(occ.new, layers, time.fire, fire.freq, jj, veg.ID, dist.occ.time,
 \item{n.species}{Number of species included in power simulations}
 }
 \description{
-This function is only called if stochastic disturbances are modelled at sites. It re-maps occupancy for disturbance-sensitive species given simulated disturbance events at sites and the disturbance history
+This function is only called if stochastic disturbances are modelled at sites. It re-maps occupancy for disturbance-sensitive species given the simulated disturbance events and the relationship between distrubances and occupancy
 It returns a new raster stack with the updated occupancy raster layers for each species
 }

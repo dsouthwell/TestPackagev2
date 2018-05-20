@@ -24,15 +24,27 @@ run.power(effect.size, nsims, alpha, Tmax, s.years, trend, sites,
 
 \item{s.years}{A vector specifying the years in which monitoring occurs. Note, the final year or monitoring must be equal to Tmax}
 
+\item{trend}{Set to 'increasing' to model an increasing trend in occupancy or 'decreasing' to model a decreasing trend}
+
 \item{sites}{An array containing the XY coordinates of pre-specified monitoring sites}
 
+\item{model.disturbance}{Set to TRUE to model a disturbance, FALSE otherwise}
+
+\item{disturbance.type}{Set to 'deterministic' or 'stochastic' depending on the type of disturbance}
+
 \item{species.list}{An array containing the name of each species in the first column, and a zero or one describing how many methods are used to detect the species}
+
+\item{dist.occ.time}{An integer specifying which layer in the raster covariate stack represents time since the last disturbance}
+
+\item{dist.occ.freq}{An integer specifying which layer in the raster covariate stack represents the number of disturbances}
 
 \item{park.level}{Set to TRUE if power is to be estimated within sub-level management units}
 
 \item{xy.sites}{The XY coordinates of monitoring sites}
 
-\item{two.tailed}{Set to TRUE is conducting a two-tailed significance test, FALSE if conducting a one-tailed test}
+\item{R}{Ratio of remote to non-remote sites}
+
+\item{two.tailed}{Set to TRUE to conduct a two-tailed significance test, FALSE if conducting a one-tailed test}
 
 \item{plot.sites}{Set to TRUE to plot the location of sites at the start of each simulation, FALSE otherwise}
 
@@ -40,9 +52,11 @@ run.power(effect.size, nsims, alpha, Tmax, s.years, trend, sites,
 
 \item{n.species}{The number of species for which monitoring is simulated. Is equal to the number of layers in the occ raster stack}
 
-\item{n.park}{The number of sub-level management units in which power is estimated}
+\item{n.park}{The number of nested management units in which to estimate power}
 
-\item{all.loaded.sites}{Set to TRUE if all of the prespecified sites are to be monitored, FALSE if fewer or more sites are to be monitored}
+\item{all.loaded.sites}{Set to TRUE if all of the loaded sites are to be monitored, FALSE otherwise}
+
+\item{new.site.selection}{Set to 'random' to select new sites randomly, 'stratified' to randomly position sites within environmental strata, or 'maxocc' to position sites on cells with the highest relative species richness}
 
 \item{occ.time}{An array containing the occupancy value for each species at monitoring sites over time}
 
@@ -52,25 +66,23 @@ run.power(effect.size, nsims, alpha, Tmax, s.years, trend, sites,
 
 \item{det.method3.time}{An array containing the detectability values of method 3 for each species at monitoring sites over time}
 
-\item{decline}{Specifies the pattern of decline across space. Set to 'random' to model a constant 'blanket' decline across space}
+\item{det.method4.time}{An array containing the detectability values of method 4 for each species at monitoring sites over time}
 
-\item{fire.hist}{Delete}
+\item{n.method}{The number of repeat visits to a site in a given survey year. Each element corresponds to each of the four detection methods}
 
-\item{model.fire}{Set to TRUE if the incidence of fire is modelled at sites, FALSE to model a static landscape over time}
+\item{occ}{Occupancy raster stack with the number of layers equal to the number of species}
 
-\item{fire.fr}{Delete}
+\item{stratify}{A raster layer of the environmental strata in which to randomly stratify monitoring sites. Each strata should have its own unique integer}
 
-\item{combined.effect}{An array that records the reduction in occupancy across sites due to the effect size and fire}
+\item{remote}{A raster layer identifying remote and non-remote areas. Remote areas should be identified with a 1, non-remote a 0}
 
-\item{randomise.sites}{Set to TRUE if sites are to randomly selected for monitoring, FALSE if pre-specified sites are surveyed}
+\item{parks}{A raster layer identifying nested areas within the landscape in which to estimate power. Each sub-unit should be identified with a separate integer}
 
-\item{occ.new}{An array containing the occupancy value for each species at monitoring sites over time}
+\item{Pr.dist}{A vector specifying the probability of a disturbance given the time since the last disturbance}
 
-\item{det.method1.new}{An array containing the detectability values of method 1 for each species at monitoring sites over time}
+\item{disturbance}{A raster stack of the disturbance history durign a proceeding time period. Disturbned cells are givena  value of 1, undisturbed cells a value of 0.}
 
-\item{det.method2.new}{An array containing the detectability values of method 2 for each species at monitoring sites over time}
-
-\item{det.method3.new}{An array containing the detectability values of method 3 for each species at monitoring sites over time}
+\item{loaded.sites}{Set to TRUE if monitoring is simulated at XY-coordinates provided, FALSE otherwise}
 
 \item{det1.method1}{An array that records simulated detection histories at sites using method 1}
 
@@ -78,13 +90,7 @@ run.power(effect.size, nsims, alpha, Tmax, s.years, trend, sites,
 
 \item{det1.method3}{An array that records simulated detection histories at sites using method 3}
 
-\item{fire.freq}{Delete!}
-
-\item{n.method1}{The number of repeat visits to sites using method 1}
-
-\item{n.method2}{The number of repeat visits to sites using method 2}
-
-\item{n.method3}{The number of repeat visits to sites using method 3}
+\item{det1.method4}{An array that records simulated detection histories at sites using method 4}
 }
 \description{
 This function runs the main power analysis. It starts by creating empty vectors to record the number of times a significant trend is detected in the simulated detection histories
@@ -92,7 +98,4 @@ It then simulates fire at sites if model.fire = TRUE, and models a decline in oc
 Detection histories are simulated at each site given the occupancy status at each site, the number of survey methods used to detect a species and the detection probability of each relevent method.
 Simulated detection histories are loaded into the package unmarked, and a trend in occupancy is modelled over time. The proportion of times a significant trend is detected is recorded.
 This process is repeated for each effect size.
-}
-\examples{
-run.power()
 }

@@ -45,13 +45,12 @@ fit.occ.3method(method1, method2, method3, repeats1, repeats2, repeats3,
 \item{ss}{An index to loop through each species}
 
 \item{two.tailed}{Set to TRUE if conducting a two-tailed test, FALSE otherwise}
+
+\item{n.park}{The number of parks in which to estimate power}
 }
 \description{
 This function fits an occupancy model to simulated detection histories using the package unmarked for species that are detected using 3 detection methods
 A trend in occupancy is estimated and confidence intervals are calculated depending on the Type I error rate. A one-tailed or two-tailed significance test is then conducted on the trend parameter
 A one-tailed test looks to see if the upper or lower confidence interval is greater than or less than zero. A two-tailed test assesses whether both the upper and lower confidence
 intervals have the same sign (i.e. are both positive or negative). If park.power = TRUE, model fitting is repeated on sites from each regional level management unit.
-}
-\examples{
-fit.occ.3method()
 }

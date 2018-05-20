@@ -16,11 +16,13 @@ sig.test(two.tailed, alpha)
 This function returns a critical value needed to calculate confidence intervals around the trend parameter given the Type I error rate and whether it is a one or two-tailed significance test.
 }
 \examples{
+#Return the critical value for a two-tailed test with a significance level of 0.05
 two.tailed <- TRUE
 alpha <- 0.05
 sig.test(two.tailed, alpha)
 
-#' two.tailed <- FALSE
+#Return the critical value for a one-tailed test with a significance level of 0.1
+two.tailed <- FALSE
 alpha <- 0.1
 sig.test(two.tailed, alpha)
 }

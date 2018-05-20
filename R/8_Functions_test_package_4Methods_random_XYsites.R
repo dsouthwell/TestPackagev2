@@ -1,13 +1,15 @@
 #############################################################################################################################
 #START BY RUNNING CHECKS ON INPUT RASTER LAYERS
 #############################################################################################################################
+
 #' Checks input raster layers
 #'
-#' This function runs a number of checks before running the power analysis simulations to make sure the raster layers have the same dimensions
+#' This function checks the dimensions of raster layers before running the power analysis simulations
 #' @param occ  Run this function requires loading in the occupancy raster stack
 #' @keywords 
 #' @export
 #' @examples
+
 check.inputs <- function(occ){
   
   # Make sure number of sites specified is equal to number of sites loaded in
@@ -64,46 +66,51 @@ check.inputs <- function(occ){
 
 #' Site selection function
 #'
-#' This function positions sites in the landscape for monitoring. Sites can be pre-selected by loading in file of XY coordinates, randomly selected at the start of each simulation, randomly stratified across environmental layers at the start of each simulation, or positioned on cells 
-#' with the highest expected species richness. If sites are selected randomly, they can also be divided between remote and non-remote areas given the remote-nonremote ratio R 
-#' @param sites  Contains the XY coordinates of sites to be surveyed. If sites are to be selected randomly, the function requires dummy XY coordinates to be provided. The header of the x-coordinate should be an x, the header for the y-coordinate should be a y. 
-#' @param n.sites  The number of sites to be monitored. If the XY coordinates are to be loaded into the program, this must be equal to the number of rows in the sites matrix      
-#' @param R  The ratio of remote to non-remote sites to be monitored. Setting R=1 means all sites will be in remote areas. Setting R=0 means no sites will be in remote areas, Setting R=0.6 means that 60% of randomly selected sites will be in remote areas
-#' @param load.sites  Set to TRUE if monitoring is simulated at fixed coordinates in the landscape, FALSE if sites are to be randomly selected, randomly stratified across environmental layers, or positioned on cells with the highest expected species richness
-#' @param all.loaded.sites  Set to TRUE to monitor all of the XY coordinates loaded into the program, FALSE to monitor a subset of sites. If n.sites is less than the numebr of loaded sites, the subset is selected at random during each simulation. If n.sites is greater than the number of loaded sites, the remainders are positioned randomly throughout the landscape each simulation   
+#' This function positions sites in the landscape for monitoring. Sites can be: 1) pre-selected by loading a file of the XY coordinates; 2) randomly selected at the start of each simulation; 3) randomly stratified across environmental layers at the start of each simulation, or; 3) positioned on cells 
+#' with the highest expected species richness. If sites are selected randomly, they can also be divided between remote and non-remote areas given the ratio R 
+#' @param sites  Contains the XY coordinates of sites to be surveyed. The header of the x-coordinate should be an x, the header for the y-coordinate should be a y. If sites are to be selected randomly, dummy XY coordinates must still be provided. 
+#' @param n.sites  The number of sites to be monitored. If sites are pre-determined, this must be equal to the number of rows in the site coordinate matrix      
+#' @param R  The ratio of remote to non-remote sites. If R is 1, all sites will be in remote areas. If R is 0, no sites will be in remote areas, Setting R=0.6 means that 60 percent of randomly selected sites will be in remote areas
+#' @param load.sites  Set to TRUE only monitor at fixed coordinates in the landscape, FALSE if sites are to be randomly selected, randomly stratified across environmental layers, or positioned on cells with the highest expected species richness
+#' @param all.loaded.sites  Set to TRUE to monitor all of the XY coordinates loaded into the program, FALSE to monitor more than, or a subset of sites, loaded into the program. If n.sites is less than the number of loaded sites, a subset is selected randomly during each simulation. If n.sites is greater than the number of loaded sites, the remaining sites are positioned randomly throughout the landscape at the start of each simulation   
 #' @param new.site.selection  Set to 'random' to select sites randomly throughout the landscape, 'stratified' to randomly select equal number of sites with environmental strata, or 'maxocc' to position sites on cells with the highest relative species richness
-#' @param plot.sites  Set to TRUE to plot the location of sites for the first simulation, FALSE to not plot sites.
+#' @param plot.sites  Set to TRUE to plot the location of sites for the first simulation, FALSE to not plot the location of sites
 #' @keywords 
 #' @export
 #' @examples
+#' #Load in fixed site coordinates to simulate monitoring at each site
 #' load.sites <- TRUE
 #' all.loaded.sites <- TRUE
 #' new.site.selection <- 'random'
-#' R <- 0.5
+#' R <- 1
 #' n.sites <- 150
 #' plot.sites <- TRUE
 #' xy.sites <- select.sites(sites, n.sites, R, all.loaded.sites, load.sites, new.site.selection, plot.sites) 
 #' 
+#' #Load in coordinates of 150 sites, but simulate monitoring at 200 sites
+#' #Select the remaining 50 sites randomly throughout the landscape 
 #' load.sites <- TRUE
 #' all.loaded.sites <- FALSE
 #' new.site.selection <- 'random'
-#' R <- 0.5
-#' n.sites <- 200
+#' R <- 1
+#' n.sites <- 100
 #' plot.sites <- TRUE
 #' xy.sites <- select.sites(sites, n.sites, R, all.loaded.sites, load.sites, new.site.selection, plot.sites)
 #' 
-#' #' load.sites <- FALSE
+#' #Select 150 sites randomly stratified across environmental layers at the start of each simulation 
+#' load.sites <- FALSE
 #' all.loaded.sites <- FALSE
 #' new.site.selection <- 'stratified'
-#' R <- 0.5
+#' R <- 1
 #' n.sites <- 150
 #' plot.sites <- TRUE
 #' xy.sites <- select.sites(sites, n.sites, R, all.loaded.sites, load.sites, new.site.selection, plot.sites)
 #' 
-#' #' #' load.sites <- FALSE
+#' #Position 150 sites for monitoring on cells with the highest relative species richness
+#' load.sites <- FALSE
 #' all.loaded.sites <- FALSE
 #' new.site.selection <- 'maxocc'
-#' R <- 0.5
+#' R <- 1
 #' n.sites <- 150
 #' plot.sites <- TRUE
 #' xy.sites <- select.sites(sites, n.sites, R, all.loaded.sites, load.sites, new.site.selection, plot.sites)
@@ -205,11 +212,13 @@ select.sites <-  function(sites, n.sites, R, all.loaded.sites, load.sites, new.s
 #' @keywords 
 #' @export
 #' @examples
+#' #Return the critical value for a two-tailed test with a significance level of 0.05
 #' two.tailed <- TRUE
 #' alpha <- 0.05
 #' sig.test(two.tailed, alpha)
 #' 
-#' #' two.tailed <- FALSE
+#' #Return the critical value for a one-tailed test with a significance level of 0.1
+#' two.tailed <- FALSE
 #' alpha <- 0.1
 #' sig.test(two.tailed, alpha)
 
@@ -224,17 +233,16 @@ sig.test <- function(two.tailed, alpha) {
 
 #' Stochastic disturbance function
 #'
-#' This function models the incidence of a stochastic disturbance at monitoring sites given the probability of a cell being disturbed as a function of time since disturbance.
-#' At present, separate hazard functions are defined for three different vegetation classes. It returns a vector specifying whether each site burns (1) or not (0) in a given year jj
+#' This function models the incidence of a stochastic disturbance at monitoring sites given the probability of a cell being disturbed as a function of time since the last disturbance.
+#' It returns a vector specifying whether each site is disturbed (1) or not (0) in a given year jj
 #' @param time.hist An array specifying the time since a disturbance at each monitoring site prior to simulations
-#' @param jj The year of simulation. Any value from 1 to Tmax
 #' @param Pr.dist A vector specifying the probability of a cell being disturbed given the time since the last disturbance.
-#' @param n.sites The number of sites to be monitored each simulation
+#' @param n.sites The number of sites monitored during each simulation
 #' @keywords 
 #' @export
 #' @examples
 
-fire.point.model2 <- function(time.hist, jj, Pr.dist, n.sites){
+stochastic.disturbance <- function(time.hist, Pr.dist, n.sites){
   burn <- Pr.dist[time.hist]
   burn <- ifelse(runif(n.sites)<burn,1,0)
   return(burn)
@@ -242,14 +250,13 @@ fire.point.model2 <- function(time.hist, jj, Pr.dist, n.sites){
 
 #' Refit occupancy raster layers function
 #'
-#' This function is only called if stochastic disturbances are modelled at sites. It re-maps occupancy for disturbance-sensitive species given simulated disturbance events at sites and the disturbance history
+#' This function is only called if stochastic disturbances are modelled at sites. It re-maps occupancy for disturbance-sensitive species given the simulated disturbance events and the relationship between distrubances and occupancy
 #' It returns a new raster stack with the updated occupancy raster layers for each species
 #' @param occ.new A raster stack of occupancy maps. Raster layers for fire sensitive species are updated depending on the simulated fire history at time jj
 #' @param layers An array of covararite values at each site. These are used to update the occ.new raster stack   
 #' @param time.fire A vector specifying the time since fire at each site in year jj given the simulated fire history
 #' @param fire.freq A vector specifying the number of fires at sites during a 15 year moving window
 #' @param jj The year of the monitoring program
-#' @param veg.ID 
 #' @param dist.occ.time An integer indentifying which layer in the covariate raster stack is the time since the last disturbance layer
 #' @param dist.occ.freq An integer indentifying which layer in the covariate raster stack is the disturbance frequency layer
 #' @param n.species Number of species included in power simulations
@@ -257,7 +264,7 @@ fire.point.model2 <- function(time.hist, jj, Pr.dist, n.sites){
 #' @export
 #' @examples
 
-refit.occ <- function(occ.new, layers, time.fire, fire.freq, jj, veg.ID, dist.occ.time, dist.occ.freq, n.species) {
+refit.occ <- function(occ.new, layers, time.fire, fire.freq, jj, dist.occ.time, dist.occ.freq, n.species) {
   for (i in 1:n.species) {
     covr <- as.numeric(species.occ[i,-1])
     covr.int <- covr[1]
@@ -273,7 +280,6 @@ refit.occ <- function(occ.new, layers, time.fire, fire.freq, jj, veg.ID, dist.oc
       logit.occ <- covr.int + rowSums(update)
       
       occ.new[,i,jj] <- exp(logit.occ)/(1+exp(logit.occ))
-      if (i == 5 & nrow(species.list == 20)) {occ.new[veg.ID==0,i,jj] <- 0}
     }
   }
   return(occ.new)
@@ -489,7 +495,6 @@ fit.occ.1method <- function(method, repeats, s.years, n.sites, xy.sites, park.ID
 #' @keywords 
 #' @export
 #' @examples
-#' fit.occ.2method()
 
 #Function to fit occupancy model when only 2 methods are used to detect species s
 fit.occ.2method <- function(method1, method2, repeats1, repeats2, s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park) {
@@ -591,10 +596,10 @@ fit.occ.2method <- function(method1, method2, repeats1, repeats2, s.years, n.sit
 #' @param value The critical value used to calculate confidence intervals around the trend parameter, depending on the Type I error rate and a one-tailed or two-tailed test
 #' @param ss An index to loop through each species 
 #' @param two.tailed Set to TRUE if conducting a two-tailed test, FALSE otherwise
+#' @param n.park The number of parks in which to estimate power
 #' @keywords 
 #' @export
 #' @examples
-#' fit.occ.3method()
 
 #Function to fit occupancy model when 3 methods are used to detect species s
 fit.occ.3method <- function(method1, method2, method3, repeats1, repeats2, repeats3, s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park) {
@@ -680,7 +685,37 @@ fit.occ.3method <- function(method1, method2, method3, repeats1, repeats2, repea
 }
 
 
-#Function to fit occupancy model when 4 methods are used to detect species s
+#' Fit occupancy model with four detection methods
+#'
+#' This function fits an occupancy model to simulated detection histories using the package unmarked for species that are detected using 4 detection methods
+#' A trend in occupancy is estimated and confidence intervals are calculated depending on the Type I error rate. A one-tailed or two-tailed significance test is then conducted on the trend parameter
+#' A one-tailed test looks to see if the upper or lower confidence interval is greater than or less than zero. A two-tailed test assesses whether both the upper and lower confidence
+#' intervals have the same sign (i.e. are both positive or negative). If park.power = TRUE, model fitting is repeated on sites from each regional level management unit. 
+#' @param method1 The first detection method relevant to species ss
+#' @param method2 The second detection method relevant to species ss
+#' @param method3 The third detection method relevant to species ss
+#' @param method4 The fourth detection method relevant to species ss
+#' @param repeats1 The number of repeat visits for the first detection method
+#' @param repeats2 The number of repeat visits for the second detection method
+#' @param repeats3 The number of repeat visits for the third detection method
+#' @param repeats4 The number of repeat visits for the fourth detection method
+#' @param s.years A vector specifying the years that monitoring occurs. Note, monitoring must be done in the final year (i.e. Tmax)
+#' @param n.sites The number of sites monitored
+#' @param xy.sites The XY coordinates of monitored sites
+#' @param park.ID A vector specifying that location of each site with sub-level parks
+#' @param park.level Set to TRUE is power is estimated within regional level management unit, FALSE otherwise
+#' @param powcnt A vector that keeps track of how many times a significant trend in occupancy is detected across the landscape
+#' @param fail A vector that keeps track of how many times the occupancy model could not be fitted to simulated detection histories at a landscape level in unmarked
+#' @param pow.park A vector that keeps track of how many times a significant trend in occupancy is detected within each park
+#' @param fail.park A vector that keeps track of how many times the occupancy model could not be fitted to simulated detection histories at a park level in unmarked
+#' @param value The critical value used to calculate confidence intervals around the trend parameter, depending on the Type I error rate and a one-tailed or two-tailed test
+#' @param ss An index to loop through each species 
+#' @param two.tailed Set to TRUE if conducting a two-tailed test, FALSE otherwise
+#' @param n.park The number of parks in which to estimate power
+#' @keywords 
+#' @export
+#' @examples
+
 fit.occ.4method <- function(method1, method2, method3, method4, repeats1, repeats2, repeats3, repeats4, s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park) {
   
   if (repeats1 == 1) {
@@ -782,51 +817,50 @@ fit.occ.4method <- function(method1, method2, method3, method4, repeats1, repeat
 #' @param effect.size An integer specifying the proportional reduction in occupancy between the start and end of the monitoring program
 #' @param nsims An integer specifying the number of simulations 
 #' @param alpha The Type I error rate. Must be either 0.1, 0.05 or 0.01
-#' @param decline Specifies the pattern of decline across space. Set to 'random' to model a constant 'blanket' decline across space
 #' @param Tmax An integer specifying the length of the monitoring program
 #' @param s.years A vector specifying the years in which monitoring occurs. Note, the final year or monitoring must be equal to Tmax
+#' @param trend Set to 'increasing' to model an increasing trend in occupancy or 'decreasing' to model a decreasing trend
 #' @param sites An array containing the XY coordinates of pre-specified monitoring sites
-#' @param fire.hist Delete
-#' @param model.fire Set to TRUE if the incidence of fire is modelled at sites, FALSE to model a static landscape over time
+#' @param model.disturbance Set to TRUE to model a disturbance, FALSE otherwise
+#' @param disturbance.type Set to 'deterministic' or 'stochastic' depending on the type of disturbance
 #' @param species.list An array containing the name of each species in the first column, and a zero or one describing how many methods are used to detect the species
+#' @param dist.occ.time An integer specifying which layer in the raster covariate stack represents time since the last disturbance
+#' @param dist.occ.freq An integer specifying which layer in the raster covariate stack represents the number of disturbances 
 #' @param park.level Set to TRUE if power is to be estimated within sub-level management units
-#' @param fire.fr Delete
-#' @param combined.effect An array that records the reduction in occupancy across sites due to the effect size and fire
 #' @param xy.sites The XY coordinates of monitoring sites
-#' @param two.tailed Set to TRUE is conducting a two-tailed significance test, FALSE if conducting a one-tailed test
+#' @param R Ratio of remote to non-remote sites
+#' @param two.tailed Set to TRUE to conduct a two-tailed significance test, FALSE if conducting a one-tailed test
 #' @param plot.sites Set to TRUE to plot the location of sites at the start of each simulation, FALSE otherwise
 #' @param n.sites The number of sites to be monitored.  
 #' @param n.species The number of species for which monitoring is simulated. Is equal to the number of layers in the occ raster stack
-#' @param n.park The number of sub-level management units in which power is estimated
-#' @param randomise.sites Set to TRUE if sites are to randomly selected for monitoring, FALSE if pre-specified sites are surveyed 
-#' @param all.loaded.sites Set to TRUE if all of the prespecified sites are to be monitored, FALSE if fewer or more sites are to be monitored
-#' @param occ.new An array containing the occupancy value for each species at monitoring sites over time 
+#' @param n.park The number of nested management units in which to estimate power
+#' @param all.loaded.sites Set to TRUE if all of the loaded sites are to be monitored, FALSE otherwise
+#' @param loaded.sites Set to TRUE if monitoring is simulated at XY-coordinates provided, FALSE otherwise
+#' @param new.site.selection Set to 'random' to select new sites randomly, 'stratified' to randomly position sites within environmental strata, or 'maxocc' to position sites on cells with the highest relative species richness
 #' @param occ.time An array containing the occupancy value for each species at monitoring sites over time 
-#' @param det.method1.new An array containing the detectability values of method 1 for each species at monitoring sites over time
-#' @param det.method2.new An array containing the detectability values of method 2 for each species at monitoring sites over time
-#' @param det.method3.new An array containing the detectability values of method 3 for each species at monitoring sites over time
 #' @param det.method1.time An array containing the detectability values of method 1 for each species at monitoring sites over time
 #' @param det.method2.time An array containing the detectability values of method 2 for each species at monitoring sites over time
 #' @param det.method3.time An array containing the detectability values of method 3 for each species at monitoring sites over time
+#' @param det.method4.time An array containing the detectability values of method 4 for each species at monitoring sites over time
+#' @param n.method The number of repeat visits to a site in a given survey year. Each element corresponds to each of the four detection methods
+#' @param occ Occupancy raster stack with the number of layers equal to the number of species
 #' @param det1.method1 An array that records simulated detection histories at sites using method 1
 #' @param det1.method2 An array that records simulated detection histories at sites using method 2
 #' @param det1.method3 An array that records simulated detection histories at sites using method 3
-#' @param fire.freq Delete!
-#' @param n.method1 The number of repeat visits to sites using method 1
-#' @param n.method2 The number of repeat visits to sites using method 2
-#' @param n.method3 The number of repeat visits to sites using method 3
+#' @param det1.method4 An array that records simulated detection histories at sites using method 4
+#' @param stratify A raster layer of the environmental strata in which to randomly stratify monitoring sites. Each strata should have its own unique integer 
+#' @param remote A raster layer identifying remote and non-remote areas. Remote areas should be identified with a 1, non-remote a 0
+#' @param parks A raster layer identifying nested areas within the landscape in which to estimate power. Each sub-unit should be identified with a separate integer
+#' @param Pr.dist A vector specifying the probability of a disturbance given the time since the last disturbance
+#' @param disturbance A raster stack of the disturbance history durign a proceeding time period. Disturbned cells are givena  value of 1, undisturbed cells a value of 0.
 #' @keywords 
 #' @export
 #' @examples
-#' run.power()
 
-#Run pwr analysis at a regional level
-#run.power <- function(effect.size, nsims, alpha, det1, working.raster, decline, plot.decline, plot.fire, Tmax, s.years, n.remote, n.4WD, sites, fire.hist, burn.area, study.area, model.fire, species.list, park.level, fire.fr, combined.effect, xy.sites) {
-#run.power <- function(effect.size, nsims, alpha, working.raster, decline, Tmax, s.years, sites, fire.hist, model.fire, species.list, park.level, fire.fr, combined.effect, xy.sites, two.tailed, plot.sites, n.sites, n.species, n.park, randomise.sites, all.loaded.sites) {
 run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, model.disturbance, disturbance.type, species.list, dist.occ.time, dist.occ.freq, 
-                      park.level, xy.sites, R,two.tailed, plot.sites, n.sites, n.species, n.park, all.loaded.sites,load.sites, new.site.selection,occ.time, 
+                      park.level, xy.sites, R, two.tailed, plot.sites, n.sites, n.species, n.park, all.loaded.sites, load.sites, new.site.selection, occ.time, 
                       det.method1.time, det.method2.time, det.method3.time, det.method4.time, n.method, occ, det.method1, det.method2, det.method3, det.method4, 
-                      stratify, remote,parks, Pr.dist, disturbance) {
+                      stratify, remote, parks, Pr.dist, disturbance) {
   
   if (n.method[1] == 0) {n.method[1] <- 1}
   if (n.method[2] == 0) {n.method[2] <- 1}
@@ -844,10 +878,10 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
   fire.freq <- array(NA, dim=c(n.sites,Tmax))
   
   #Set up vectors and matrices to record the number of instances when we detect a change in occupancy
-  powcnt <-rep(0,n.species) #REMOVE FROM LOOP
-  pow.park <- matrix(0,ncol=n.species,nrow=length(n.park)) #REMOVE FROM LOOP
-  fail <- rep(0,n.species) #REMOVE FROM LOOP
-  fail.park <- matrix(0,ncol=n.species,nrow=length(n.park)) #REMOVE FROM LOOP
+  powcnt <-rep(0,n.species) 
+  pow.park <- matrix(0,ncol=n.species,nrow=length(n.park)) 
+  fail <- rep(0,n.species) 
+  fail.park <- matrix(0,ncol=n.species,nrow=length(n.park)) 
   
   for (ii in 1:nsims){ #Loop through number of simulations from 1 to nsims
     cat('\n',"Effect size = ", effect.size, " Simulation = ", ii) 
@@ -893,7 +927,7 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
       
       for (jj in 1:Tmax) { #For each simulation loop ii, loop through time from 1 to Tmax
         #burn <- fire.point.model(time.hist, time.fire, veg.ID, jj) #Simulate whether monitoring sites burn
-        burn <- fire.point.model2(time.hist, jj, Pr.dist, n.sites)
+        burn <- stochastic.disturbance(time.hist, Pr.dist, n.sites)
         fire.ID[,nlayers(fire.hist) + jj] <- burn #Record fire history at sites for year jj
         if (jj==1) {
           time.fire[,jj] <- ifelse(burn == 1, 1, time.hist+1)
@@ -904,7 +938,7 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
           fire.freq[,jj] <- rowSums(fire.ID[, (jj+1):(jj+nlayers(fire.hist))]) #Sum number of fires in 15 year moving window
         }	
         if (jj %in% s.years) { 
-          occ.new <- refit.occ(occ.new, layers, time.fire, fire.freq, jj, veg.ID, dist.occ.time, dist.occ.freq, n.species) 
+          occ.new <- refit.occ(occ.new, layers, time.fire, fire.freq, jj, dist.occ.time, dist.occ.freq, n.species) 
           det.out <- refit.det(det.method1.new=det.method1.new, det.method2.new=det.method2.new, det.method3.new=det.method3.new, det.method4.new=det.method4.new, layers, time.fire, fire.freq, jj, dist.occ.time, dist.occ.freq, n.species)
         }
       }
@@ -915,10 +949,19 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
     }
     
     if (model.disturbance == TRUE & disturbance.type == "deterministic") { #If we specified a stochastic disturbance event
-      dist.prop <- matrix(NA,n.sites,Tmax)
+      dist.prop <- matrix(0,n.sites,Tmax)
       for (i in 1:Tmax) {
-        dist.prop[,i] <- disturbance[[i]][cellFromXY(disturbance[[i]], xy.sites)] #Multiply the occ values in disturbed sites by the multiplication value 
-        occ.new[,,i] <- occ.new[,,i]*dist.prop[,i]
+        dist.prop[,i] <- disturbance[[i]][cellFromXY(disturbance[[i]], xy.sites)]
+      } 
+      dist.copy <- dist.prop
+      if (any(dist.prop<0)) { #If the determinstic disturbance has a negative effect on occupancy
+        dist.copy[dist.copy<0] <- dist.copy[dist.copy<0]*-1
+        for (i in 1:Tmax) {occ.new[,,i] <- occ.new[,,i]*dist.copy[,i]}
+      }
+      
+      if (all(dist.prop>0)) { #If the deterministic disturbance has a positive effect on occupancy
+          dist.copy[dist.copy==1] <- 0
+          for (i in 1:Tmax) {occ.new[,,i] <- occ.new[,,i] + (1-occ.new[,,i])*dist.copy[,i]}
       }
     } 
     
@@ -991,41 +1034,6 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
         occ.fit <- fit.occ.4method(method1=methods[[pos[1]]], method2=methods[[pos[2]]], method3=methods[[pos[3]]], method4=methods[[pos[4]]], repeats1=n.method[pos[1]], repeats2=n.method[pos[2]], repeats3=n.method[pos[3]], repeats4=n.method[pos[4]], s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park)
       }
       
-      #Fit occ model for species only detected using method 1
-      #if (species.list[ss,2] == 1 & species.list[ss,3] == 0 & species.list[ss,4] == 0) {
-      #occ.fit <- fit.occ.1method(method=det1.method1, repeats=n.method[1], s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park)
-      # }
-      
-      #Sit occ model for species only detected using method 2
-      #if (species.list[ss,2] == 0 & species.list[ss,3] == 1 & species.list[ss,4] == 0) {
-      #occ.fit <- fit.occ.1method(method=det1.method2, repeats=n.method[2], s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park)
-      #}
-      
-      #Fit occ model for species only detected using method 3
-      #if (species.list[ss,2] == 0 & species.list[ss,3] == 0 & species.list[ss,4] == 1) {
-      # occ.fit <- fit.occ.1method(method=det1.method3, repeats=n.method[3], s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park)
-      #}
-      
-      #Fit occ model for species detected using method 1 and 2
-      #if (species.list[ss,2] == 1 & species.list[ss,3] == 1 & species.list[ss,4] == 0) {
-      #occ.fit <- fit.occ.2method(method1=det1.method1, method2=det1.method2, repeats1=n.method[1], repeats2=n.method[2], s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park)
-      # }
-      
-      #Fit occ model for species detected using method 1 and 3
-      # if (species.list[ss,2] == 1 & species.list[ss,3] == 0 & species.list[ss,4] == 1) {
-      # occ.fit <- fit.occ.2method(method1=det1.method1, method2=det1.method3, repeats1=n.method[1], repeats2=n.method[3], s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park)
-      #}
-      
-      #Fit occ model for species detected using method 2 and 3
-      # if (species.list[ss,2] == 0 & species.list[ss,3] == 1 & species.list[ss,4] == 1) {
-      #occ.fit <- fit.occ.2method(method1=det1.method2, method2=det1.method3, repeats1=n.method[2], repeats2=n.method[3], s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park)
-      # }
-      
-      #Fit occ model for species detected using methods 1, 2 and 3
-      # if (species.list[ss,2] == 1 & species.list[ss,3] == 1 & species.list[ss,4] == 1) {
-      #  occ.fit <- fit.occ.3method(method1=det1.method1, method2=det1.method2, method3=det1.method3, repeats1=n.method[1], repeats2=n.method[2], repeats3=n.method[3], s.years, n.sites, xy.sites, park.ID, park.level, powcnt, fail, pow.park, fail.park, value, ss, two.tailed, n.park)
-      # }
-      
       powcnt <- occ.fit[[1]]
       fail <- occ.fit[[2]]
       pow.park <- occ.fit[[3]]
@@ -1037,11 +1045,6 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
   #Calculate pwr from simulations for each species
   combined.effect <- colMeans(combined.effect)
   output <- rbind(powcnt,fail,pow.park,fail.park,combined.effect) #If running in parallel
-  #pwr <- powcnt/(nsims-fail)
-  #pwr.park <- pow.park/(nsims-fail.park)
-  #print(fail)
-  #output <- rbind(matrix(pwr,nrow=1,ncol=n.species),pwr.park,combined.effect)
-  #cat("power = ", pwr , " seconds\n\n\n") 
   return(output)
 }
 
@@ -1050,16 +1053,15 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
 #' This function plots results of the power analysis. It first unpacks the list generated by the foreach function and estimates power given the number of simulations 
 #' and the number of cores used. Power is plotted for each species on a single figure. Users can then scroll through separate plots for power at a park level if it park.power = TRUE
 #' @param pwr An array containing the results of the power analysis
-#' @param n.species The number of species
-#' @param nsims The number of simulations
-#' @param effect.size The proportional decline in occupancy
-#' @param n.park The number of parks in which to restimate power
+#' @param n.species The number of species in which to estimate power
+#' @param nsims The number of simulations across each core
+#' @param effect.size A vector specifying the proportional decline in occupancy
+#' @param n.park The number of nested management units in which to estimate power
 #' @param species.list A vector specifying the name of each species analysed
-#' @param save.wd A directory to save results and figures
-#' @keywords cats
+#' @param n.cores A matrix specifying the name of each species analysed and the relevant detection method
+#' @keywords 
 #' @export
 #' @examples
-#' plot.results()
 
 plot.power <- function(pwr, n.species, nsims, effect.size, n.park, species.list, n.cores) {
   Results <- array(dim=c(length(n.park)+1,n.species,length(effect.size)))

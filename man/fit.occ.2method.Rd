@@ -50,6 +50,3 @@ A trend in occupancy is estimated and confidence intervals are calculated depend
 A one-tailed test looks to see if the upper or lower confidence interval is greater than or less than zero. A two-tailed test assesses whether both the upper and lower confidence
 intervals have the same sign (i.e. are both positive or negative). If park.power = TRUE, model fitting is repeated on sites from each regional level management unit.
 }
-\examples{
-fit.occ.2method()
-}
