@@ -25,7 +25,7 @@ check.inputs <- function(occ){
   # Check that the number of layers in he determinstic disturbance raster stack is equal to the the length of the monitoring program (Tmax)
   if (model.disturbance == TRUE & disturbance.type == "deterministic"){
     if (nlayers(disturbance) != Tmax){
-    cat('\n',"Warning: Length of Determinstic disturbance time series not equal to Tmax")}
+      cat('\n',"Warning: Length of Determinstic disturbance time series not equal to Tmax")}
   }
   
   #Check the number of species is consistent in the occupancy and detectability raster stacks
@@ -305,7 +305,7 @@ refit.occ <- function(occ.new, layers, time.fire, fire.freq, jj, dist.occ.time, 
 #' @examples
 
 refit.det <- function(det.method1.new, det.method2.new, det.method3.new, det.method4.new, layers, time.fire, fire.freq, jj, dist.occ.time, dist.occ.freq, n.species) {
- 
+  
   time.scale <- array(scale(time.fire)[,jj])
   freq.scale <- array(scale(fire.freq)[,jj])
   layers[,dist.occ.time] <- time.scale 
@@ -913,7 +913,7 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
     det.method3.new[] <- det.method3.time
     det.method4.new[] <- det.method4.time
     occ.new[] <- occ.time
-   
+    
     #Model fire at monitoring sites if the model.fire == TRUE
     if (model.disturbance == TRUE & disturbance.type == "stochastic") { #If we specified a stochastic disturbance event
       cat('\n',"Modelling stochastic disturbance and updating occ and det layers.....")
@@ -960,8 +960,8 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
       }
       
       if (all(dist.prop>0)) { #If the deterministic disturbance has a positive effect on occupancy
-          dist.copy[dist.copy==1] <- 0
-          for (i in 1:Tmax) {occ.new[,,i] <- occ.new[,,i] + (1-occ.new[,,i])*dist.copy[,i]}
+        dist.copy[dist.copy==1] <- 0
+        for (i in 1:Tmax) {occ.new[,,i] <- occ.new[,,i] + (1-occ.new[,,i])*dist.copy[,i]}
       }
     } 
     
@@ -972,38 +972,45 @@ run.power <- function(effect.size, nsims, alpha, Tmax, s.years, trend, sites, mo
       effect.time <- effect.size/Tmax*c(1:Tmax)
       for (i in 1:Tmax) {occ.new[,,i] <- occ.new[,,i] + ((1-occ.new[,,i])*effect.time[i])}} 
     
-    combined.effect[ii,] <- (occ.time[1,,1]-occ.new[1,,Tmax])/occ.time[1,,1]
+    #Calculate the combined effect size
+    magnitude.change <- -(occ.time[1,,1]-occ.new[1,,Tmax])
     
-      for (i in 1:Tmax) {
-        occ.new[,,i] <- ifelse(runif(ncell(occ.new[,,i])) < occ.new[,,i],1,0)
-      }
+    if (any(magnitude.change<0)) {
+      combined.effect[ii,which(magnitude.change<0)] <- (occ.time[1,which(magnitude.change<0),1]-occ.new[1,which(magnitude.change<0),Tmax])/occ.time[1,which(magnitude.change<0),1]
+    }
+    if (any(magnitude.change>0)) {
+      combined.effect[ii,which(magnitude.change>0)] <- -((occ.new[1,which(magnitude.change>0),Tmax]) - occ.time[1,which(magnitude.change>0),1])/(1 - occ.time[1,which(magnitude.change>0),1])
+    }
+   
+    for (i in 1:Tmax) {
+      occ.new[,,i] <- ifelse(runif(ncell(occ.new[,,i])) < occ.new[,,i],1,0)
+    }
     
     cat('\n',"Simulating monitoring at sites.....")
     for (jj in 1:n.method[1]){
-      for (tt in 1:Tmax) { #MIGHT BE ABLE TO REMOVE TT LOOP 
+      for (tt in 1:Tmax) { 
         det1.method1[,,jj,tt] <- ifelse(runif(ncell(det.method1.new[,,tt])) < det.method1.new[,,tt] & occ.new[,,tt] == 1, 1, 0)
       }}
     
     for (jj in 1:n.method[2]){
-      for (tt in 1:Tmax) { #MIGHT BE ABLE TO REMOVE TT LOOP
+      for (tt in 1:Tmax) { 
         det1.method2[,,jj,tt] <- ifelse(runif(ncell(det.method2.new[,,tt])) < det.method2.new[,,tt] & occ.new[,,tt] == 1,1,0)
       }
     }
     
     for (jj in 1:n.method[3]){
-      for (tt in 1:Tmax) { #MIGHT BE ABLE TO REMOVE TT LOOP
+      for (tt in 1:Tmax) { 
         det1.method3[,,jj,tt] <- ifelse(runif(ncell(det.method3.new[,,tt])) < det.method3.new[,,tt] & occ.new[,,tt] == 1 ,1,0)
       }
     }
     
     for (jj in 1:n.method[4]){
-      for (tt in 1:Tmax) { #MIGHT BE ABLE TO REMOVE TT LOOP
+      for (tt in 1:Tmax) { 
         det1.method4[,,jj,tt] <- ifelse(runif(ncell(det.method4.new[,,tt])) < det.method4.new[,,tt] & occ.new[,,tt] == 1 ,1,0)
       }
     }
     
     #Combine the results of each detection method for each species, create detection histories and fit occupancy model 
-    
     cat('\n',"Fitting occ model.....")
     value <- sig.test(two.tailed, alpha)
     methods <- list(det1.method1,det1.method2,det1.method3,det1.method4)
@@ -1081,9 +1088,11 @@ plot.power <- function(pwr, n.species, nsims, effect.size, n.park, species.list,
     for (v in 1:(length(n.park)+1)) {
       cl <- rainbow(n.species)
       par(mfcol=c(1,1), mar=c(0.1,0.1,0.1,0.1), oma=c(4,4,4,4), mai=c(0.1,0.1,0.1,1),xpd=NA)
-      plot(Results[v,1,]~new.effect[,1], type="l",ylim=c(0,1), xlim=c(0,1), lwd=1, main="", col="grey", ylab="Statistical power", xlab="Effect size",cex.lab=1.2)
-      for (i in 1:n.species) {lines(Results[v,i,]~new.effect[,i], type="l",ylim=c(0,1), xlim=c(0,1), lwd=2, col=cl[i], lty=1)}
+      plot(Results[v,1,]~new.effect[,1], type="l",ylim=c(0,1), xlim=c(-1,1), lwd=1, main="", col="grey", ylab="Statistical power", xlab="Effect size",cex.lab=1.2)
+      for (i in 1:n.species) {lines(Results[v,i,]~new.effect[,i], type="l",ylim=c(0,1), xlim=c(-1,1), lwd=2, col=cl[i], lty=1)}
       legend("topright", c(as.character(species.list[,1])), inset=c(-0.5,0), lwd=rep(2,n.species), cex=0.7, col=cl[1:n.species])
+      mtext("Increasing", side = 1, outer=TRUE, adj=0.15, line = 1.3, cex=0.9)
+      mtext("Decreasing", side = 1, outer=TRUE, adj=0.60, line = 1.3, cex=0.9)
       if (v==1) {mtext("Power: landscape level", side = 3, outer=TRUE, adj=0.78, line = 1, cex=1.3)} 
       else {mtext(paste("Power: Park ", v-1), side = 3, outer=TRUE, adj=0.78, line = 1, cex=1.3)}
       readline(prompt="Press [enter] to continue.....")
@@ -1095,14 +1104,15 @@ plot.power <- function(pwr, n.species, nsims, effect.size, n.park, species.list,
     mtext("Landscape level (all sites)", side = 3, outer=TRUE, adj=0.78, line = 1, cex=1.3)
     for (i in 1:n.species) {lines(Results[1,i,]~new.effect[,i], type="l",ylim=c(0,1), xlim=c(0,1), lwd=2, col=cl[i], lty=1)}
     legend("topright", c(as.character(species.list[,1])), inset=c(-0.5,0), lwd=rep(2,n.species), cex=0.7, col=cl[1:n.species])
+    mtext("Increasing", side = 1, outer=TRUE, adj=0.15, line = 1.3, cex=0.9)
+    mtext("Decreasing", side = 1, outer=TRUE, adj=0.60, line = 1.3, cex=0.9)
   }
-  
   
   cat('\n',"##########################################################") 
   cat('\n',"OUTPUT SUMMARY.....") 
   cat('\n',"##########################################################")  
   cat('\n',"Number of species = ", n.species)
-  cat('\n',"Number of parks = ", max(n.park))
+  cat('\n',"Number of parks = ", length(unique(n.park)))
   cat('\n',"Disturbance modelled at sites = ", model.disturbance)
   cat('\n',"Disturbance type = ", disturbance.type)
   cat('\n',"Analysis based on loaded sites = ", load.sites)
@@ -1115,6 +1125,7 @@ plot.power <- function(pwr, n.species, nsims, effect.size, n.park, species.list,
   cat('\n',"Number of repeat visits (method 2) = ", n.method[2])
   cat('\n',"Number of repeat visits (method 3) = ", n.method[3])
   cat('\n',"Number of repeat visits (method 4) = ", n.method[4])
+  cat('\n',"Direction of trend = ", trend) 
   cat('\n',"Effect size(s) = ", effect.size) 
   cat('\n',"Two tailed test = ", two.tailed)
   cat('\n',"Type I error rate = ", alpha)
